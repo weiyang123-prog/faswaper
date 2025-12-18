@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文旅智能虚拟换装合影系统</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            animation: bgFadeIn 2s ease;
+            color: #00FFEA;
+        }
+
+        @keyframes bgFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* 用户信息栏 */
+        .user-bar {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 15px #00FFEA;
+        }
+
+        .user-bar span {
+            font-size: 1.1rem;
+            color: #00FFEA;
+        }
+
+        .user-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .user-links a {
+            color: #00FFEA;
+            text-decoration: none;
+            padding: 8px 15px;
+            border: 1px solid #00FFEA;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .user-links a:hover {
+            background: #00FFEA;
+            color: #000;
+            box-shadow: 0 0 10px #00FFEA;
+        }
+
+        h1 {
+            text-align: center;
+            color: #00FFEA;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            animation: fadeInDown 1s ease-out, neonGlow 1.5s ease-in-out infinite alternate;
+            text-shadow: 0 0 10px #00FFEA, 0 0 20px #00FFEA, 0 0 30px #00FFEA;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes neonGlow {
+            from {
+                text-shadow: 0 0 10px #00FFEA, 0 0 20px #00FFEA, 0 0 30px #00FFEA;
+            }
+            to {
+                text-shadow: 0 0 20px #00FFEA, 0 0 30px #00FFEA, 0 0 40px #00FFEA;
+            }
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 上传区域样式 */
+        .upload-section {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px #00FFEA;
+            animation: slideInUp 1s ease-out, formGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes formGlow {
+            from { box-shadow: 0 0 20px #00FFEA; }
+            to { box-shadow: 0 0 30px #00FFEA; }
+        }
+
+        .upload-section h2 {
+            color: #00FFEA;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .upload-item {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #00FFEA;
+            font-size: 1.1rem;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #00FFEA;
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #00FFEA;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        input[type="file"]:hover {
+            border-color: #FF00FF;
+            box-shadow: 0 0 10px #FF00FF;
+        }
+
+        /* 预览区域样式 */
+        .preview-section {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px #00FFEA;
+        }
+
+        .preview-section h2 {
+            color: #00FFEA;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .preview-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .preview-item {
+            text-align: center;
+        }
+
+        .preview-item h3 {
+            color: #00FFEA;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 200px;
+            border: 2px solid #00FFEA;
+            border-radius: 10px;
+            background: rgba(0, 255, 234, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .preview-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .preview-placeholder {
+            color: #00FFEA;
+            font-size: 0.9rem;
+        }
+
+        /* 按钮样式 */
+        .generate-btn {
+            background-color: #00FFEA;
+            color: #000;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 0 15px #00FFEA;
+            margin-top: 10px;
+        }
+
+        .generate-btn:hover {
+            background-color: #FF00FF;
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px #FF00FF;
+        }
+
+        .generate-btn:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 进度条样式 */
+        #progressContainer {
+            width: 100%;
+            margin: 20px 0;
+            display: none;
+            position: relative;
+        }
+
+        #progressBar {
+            width: 100%;
+            height: 25px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 10px #00FFEA;
+            border: 1px solid #00FFEA;
+        }
+
+        #progressBar div {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #00FFEA, #FF00FF);
+            border-radius: 12px;
+            transition: width 0.3s ease;
+        }
+
+        #progressText {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1rem;
+            color: #00FFEA;
+        }
+
+        #progressPercentage {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #000;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-shadow: 0 0 2px #fff;
+        }
+
+        /* 结果区域样式 */
+        #result {
+            margin-top: 30px;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        #result img {
+            max-width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 0 25px #00FFEA;
+            border: 3px solid #00FFEA;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 0 30px #00FFEA;
+            animation: modalFadeIn 0.5s ease;
+            border: 2px solid #00FFEA;
+            max-width: 90%;
+            max-height: 90%;
+            overflow: auto;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .modal-btn {
+            background-color: #00FFEA;
+            color: #000;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .modal-btn:hover {
+            background-color: #FF00FF;
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px #FF00FF;
+        }
+
+        .modal-btn.secondary {
+            background-color: #666;
+        }
+
+        .modal-btn.secondary:hover {
+            background-color: #888;
+        }
+
+        .result-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-item {
+            text-align: center;
+        }
+
+        .comparison-item h3 {
+            color: #00FFEA;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .comparison-image {
+            width: 100%;
+            height: 200px;
+            border: 2px solid #00FFEA;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(0, 255, 234, 0.1);
+        }
+
+        .comparison-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 反馈表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00FFEA;
+        }
+
+        .form-group select,
+        .form-group textarea,
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #00FFEA;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #00FFEA;
+            font-size: 1rem;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus,
+        .form-group input[type="text"]:focus {
+            outline: none;
+            border-color: #FF00FF;
+            box-shadow: 0 0 10px #FF00FF;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* 评论区域样式 */
+        .comments-section {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px #00FFEA;
+            margin-top: 30px;
+        }
+
+        .comments-section h2 {
+            color: #00FFEA;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .comment-form {
+            margin-bottom: 30px;
+        }
+
+        .comments-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .comment-item {
+            background: rgba(0, 255, 234, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #00FFEA;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #FF00FF;
+        }
+
+        .comment-content {
+            color: #00FFEA;
+            line-height: 1.5;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- 用户信息栏 -->
+    <div class="user-bar">
+        <span>欢迎，{{ username }}！</span>
+        <div class="user-links">
+            <a href="#" id="feedbackBtn">意见反馈</a>
+            <a href="/logout">退出登录</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>文旅智能虚拟换装合影系统</h1>
+
+        <div class="main-content">
+            <!-- 上传区域 -->
+            <div class="upload-section">
+                <h2>上传图片</h2>
+                <form id="uploadForm">
+                    <div class="upload-item">
+                        <label for="userPhoto">上传特色服饰人物照片：</label>
+                        <input type="file" id="userPhoto" name="userPhoto" accept="image/*" required>
+                    </div>
+                    <div class="upload-item">
+                        <label for="costumePhoto">上传个人图片：</label>
+                        <input type="file" id="costumePhoto" name="costumePhoto" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="generate-btn" id="generateBtn">生成合影</button>
+                </form>
+
+                <!-- 进度条 -->
+                <div id="progressContainer">
+                    <div id="progressBar">
+                        <div></div>
+                        <span id="progressPercentage">0%</span>
+                    </div>
+                    <div id="progressText">正在合成，请稍等...</div>
+                </div>
+            </div>
+
+            <!-- 预览区域 -->
+            <div class="preview-section">
+                <h2>图片预览</h2>
+                <div class="preview-container">
+                    <div class="preview-item">
+                        <h3>特色服饰人物照片</h3>
+                        <div class="preview-image" id="userPreview">
+                            <div class="preview-placeholder">尚未上传</div>
+                        </div>
+                    </div>
+                    <div class="preview-item">
+                        <h3>个人图片</h3>
+                        <div class="preview-image" id="costumePreview">
+                            <div class="preview-placeholder">尚未上传</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="preview-item">
+                    <h3>生成结果</h3>
+                    <div class="preview-image" id="resultPreview">
+                        <div class="preview-placeholder">等待生成</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 生成结果模态框 -->
+        <div id="resultModal" class="modal">
+            <div class="modal-content">
+                <h2>生成成功！</h2>
+                <div class="result-comparison">
+                    <div class="comparison-item">
+                        <h3>特色服饰人物照片</h3>
+                        <div class="comparison-image">
+                            <img id="comparisonUser" src="" alt="个人照片">
+                        </div>
+                    </div>
+                    <div class="comparison-item">
+                        <h3>虚拟换装合影结果</h3>
+                        <div class="comparison-image">
+                            <img id="comparisonResult" src="" alt="生成结果">
+                        </div>
+                    </div>
+                    <div class="comparison-item">
+                        <h3>个人图片</h3>
+                        <div class="comparison-image">
+                            <img id="comparisonCostume" src="" alt="服饰图片">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button id="saveButton" class="modal-btn">保存照片</button>
+                    <button id="newGenerateBtn" class="modal-btn">重新生成</button>
+                    <button id="closeResultBtn" class="modal-btn secondary">关闭</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 反馈模态框 -->
+        <div id="feedbackModal" class="modal">
+            <div class="modal-content">
+                <h2>意见反馈</h2>
+                <form id="feedbackForm">
+                    <div class="form-group">
+                        <label for="feedbackType">反馈类型：</label>
+                        <select id="feedbackType" name="type" required>
+                            <option value="suggestion">功能建议</option>
+                            <option value="bug">问题反馈</option>
+                            <option value="other">其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="feedbackContent">反馈内容：</label>
+                        <textarea id="feedbackContent" name="content" rows="5" required placeholder="请输入您的宝贵意见..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact">联系方式（选填）：</label>
+                        <input type="text" id="contact" name="contact" placeholder="邮箱或手机号">
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="submit" class="modal-btn">提交反馈</button>
+                        <button type="button" id="closeFeedbackBtn" class="modal-btn secondary">关闭</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 评论区域 -->
+        <div class="comments-section">
+            <h2>用户评论</h2>
+            <div class="comment-form">
+                <form id="commentForm">
+                    <div class="form-group">
+                        <label for="commentContent">发表评论：</label>
+                        <textarea id="commentContent" name="content" rows="3" required placeholder="分享您的使用体验..."></textarea>
+                    </div>
+                    <button type="submit" class="generate-btn">提交评论</button>
+                </form>
+            </div>
+            <div class="comments-list" id="commentsList">
+                <!-- 评论将通过JavaScript动态加载 -->
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <span>管理员</span>
+                        <span>2024-01-01 10:00:00</span>
+                    </div>
+                    <div class="comment-content">
+                        欢迎使用文旅智能虚拟换装合影系统！期待您的宝贵意见。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 图片预览功能
+        document.getElementById('userPhoto').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('userPreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="个人照片预览">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('costumePhoto').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('costumePreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="服饰图片预览">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 表单提交处理 - 直接生成，不显示模式选择
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const userPhoto = document.getElementById('userPhoto').files[0];
+            const costumePhoto = document.getElementById('costumePhoto').files[0];
+
+            if (!userPhoto || !costumePhoto) {
+                alert('请上传个人照片和服饰图片。');
+                return;
+            }
+
+            // 直接使用替换整个脸部的方式
+            handleFormSubmission('full_face');
+        });
+
+        async function handleFormSubmission(mode) {
+            const userPhoto = document.getElementById('userPhoto').files[0];
+            const costumePhoto = document.getElementById('costumePhoto').files[0];
+
+            // 显示进度条
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBarInner = document.querySelector('#progressBar div');
+            const progressPercentage = document.getElementById('progressPercentage');
+            const progressText = document.getElementById('progressText');
+            const generateBtn = document.getElementById('generateBtn');
+
+            progressContainer.style.display = 'block';
+            generateBtn.disabled = true;
+            progressBarInner.style.width = '0%';
+            progressPercentage.textContent = '0%';
+            progressText.textContent = '正在合成，请稍等...';
+
+            // 更新进度条
+            const updateProgress = (progress) => {
+                progressBarInner.style.width = `${progress}%`;
+                progressPercentage.textContent = `${progress}%`;
+            };
+
+            // 模拟进度更新
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 1;
+                updateProgress(progress);
+                if (progress >= 90) {
+                    clearInterval(progressInterval);
+                }
+            }, 50);
+
+            try {
+                const formData = new FormData();
+                formData.append('userPhoto', userPhoto);
+                formData.append('costumePhoto', costumePhoto);
+                formData.append('mode', mode);
+
+                // 发送请求到后端
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                clearInterval(progressInterval);
+                updateProgress(100);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setTimeout(() => {
+                        showResultModal(data.imageUrl, userPhoto, costumePhoto);
+                        progressContainer.style.display = 'none';
+                        generateBtn.disabled = false;
+                    }, 500);
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || '生成失败');
+                }
+            } catch (error) {
+                clearInterval(progressInterval);
+                updateProgress(0);
+                progressText.textContent = `生成失败：${error.message}`;
+                generateBtn.disabled = false;
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // 显示结果模态框
+        function showResultModal(imageUrl, userPhoto, costumePhoto) {
+            const resultModal = document.getElementById('resultModal');
+            const comparisonResult = document.getElementById('comparisonResult');
+
+            // 更新结果图片
+            comparisonResult.src = imageUrl;
+
+            // 更新对比图片
+            const reader1 = new FileReader();
+            reader1.onload = function(e) {
+                document.getElementById('comparisonUser').src = e.target.result;
+            }
+            reader1.readAsDataURL(userPhoto);
+
+            const reader2 = new FileReader();
+            reader2.onload = function(e) {
+                document.getElementById('comparisonCostume').src = e.target.result;
+            }
+            reader2.readAsDataURL(costumePhoto);
+
+            // 更新预览区域的结果
+            const resultPreview = document.getElementById('resultPreview');
+            resultPreview.innerHTML = `<img src="${imageUrl}" alt="生成结果预览">`;
+
+            resultModal.style.display = 'flex';
+        }
+
+        // 结果模态框按钮事件
+        document.getElementById('saveButton').addEventListener('click', function() {
+            const imageUrl = document.getElementById('comparisonResult').src;
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = '虚拟合影_' + new Date().getTime() + '.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        document.getElementById('newGenerateBtn').addEventListener('click', function() {
+            document.getElementById('resultModal').style.display = 'none';
+            // 重置表单
+            document.getElementById('uploadForm').reset();
+            document.getElementById('userPreview').innerHTML = '<div class="preview-placeholder">尚未上传</div>';
+            document.getElementById('costumePreview').innerHTML = '<div class="preview-placeholder">尚未上传</div>';
+            document.getElementById('resultPreview').innerHTML = '<div class="preview-placeholder">等待生成</div>';
+        });
+
+        document.getElementById('closeResultBtn').addEventListener('click', function() {
+            document.getElementById('resultModal').style.display = 'none';
+        });
+
+        // 反馈功能
+        document.getElementById('feedbackBtn').addEventListener('click', function() {
+            document.getElementById('feedbackModal').style.display = 'flex';
+        });
+
+        document.getElementById('closeFeedbackBtn').addEventListener('click', function() {
+            document.getElementById('feedbackModal').style.display = 'none';
+        });
+
+        document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                type: document.getElementById('feedbackType').value,
+                content: document.getElementById('feedbackContent').value,
+                contact: document.getElementById('contact').value
+            };
+
+            try {
+                const response = await fetch('/feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    alert('反馈提交成功！感谢您的宝贵意见。');
+                    document.getElementById('feedbackForm').reset();
+                    document.getElementById('feedbackModal').style.display = 'none';
+                } else {
+                    throw new Error('提交失败');
+                }
+            } catch (error) {
+                alert('反馈提交失败，请稍后重试。');
+            }
+        });
+
+        // 评论功能
+        document.getElementById('commentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const content = document.getElementById('commentContent').value;
+
+            try {
+                const response = await fetch('/feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: 'comment',
+                        content: content
+                    })
+                });
+
+                if (response.ok) {
+                    alert('评论发表成功！');
+                    document.getElementById('commentForm').reset();
+                    loadComments();
+                } else {
+                    throw new Error('发表失败');
+                }
+            } catch (error) {
+                alert('评论发表失败，请稍后重试。');
+            }
+        });
+
+        // 加载评论
+        async function loadComments() {
+            try {
+                const response = await fetch('/get_feedbacks');
+                if (response.ok) {
+                    const feedbacks = await response.json();
+                    const commentsList = document.getElementById('commentsList');
+                    commentsList.innerHTML = '';
+
+                    // 过滤出评论
+                    const comments = feedbacks.filter(f => f.type === 'comment');
+
+                    if (comments.length === 0) {
+                        commentsList.innerHTML = '<div class="comment-item"><div class="comment-content">暂无评论</div></div>';
+                        return;
+                    }
+
+                    // 按时间倒序排列
+                    comments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                    comments.forEach(comment => {
+                        const commentItem = document.createElement('div');
+                        commentItem.className = 'comment-item';
+                        commentItem.innerHTML = `
+                            <div class="comment-header">
+                                <span>${comment.username}</span>
+                                <span>${comment.timestamp}</span>
+                            </div>
+                            <div class="comment-content">${comment.content}</div>
+                        `;
+                        commentsList.appendChild(commentItem);
+                    });
+                }
+            } catch (error) {
+                console.error('加载评论失败:', error);
+        }
+            }
+
+        // 页面加载时获取评论
+        document.addEventListener('DOMContentLoaded', function() {
+            loadComments();
+        });
+
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(e) {
+            const resultModal = document.getElementById('resultModal');
+            const feedbackModal = document.getElementById('feedbackModal');
+
+            if (e.target === resultModal) {
+                resultModal.style.display = 'none';
+            }
+            if (e.target === feedbackModal) {
+                feedbackModal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>
